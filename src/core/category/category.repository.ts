@@ -32,7 +32,7 @@ export const CategoryRepository = dataSource
 
     async getAllCategories(): Promise<GetCategoryDto[]> {
       const query = this.createQueryBuilder('category')
-        .addOrderBy('category.id', 'DESC')
+        .addOrderBy('category.id', 'ASC')
         .select(['category.id', 'category.name'])
         .getMany();
       return query;
@@ -40,7 +40,7 @@ export const CategoryRepository = dataSource
 
     async getCategoriesByIdArray(array: number[]): Promise<CategoryEntity[]> {
       const query = this.createQueryBuilder('category')
-        .addOrderBy('category.id', 'DESC')
+        .addOrderBy('category.id', 'ASC')
         .where('category.id IN (:...ids)', {
           ids: array,
         })

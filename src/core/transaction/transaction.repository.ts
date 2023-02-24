@@ -3,6 +3,7 @@ import { TransactionEntity } from './transaction.entity';
 import { CreateTransactionDto, GetTransactionDto } from './dto/transaction.dto';
 import { BankEntity } from '../bank/bank.entity';
 import { CategoryEntity } from '../category/category.entity';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 export const TransactionRepository = dataSource
   .getRepository(TransactionEntity)
@@ -23,11 +24,19 @@ export const TransactionRepository = dataSource
       return transaction;
     },
 
-    async getAllTransactions(): Promise<GetTransactionDto[]> {
+    async getAllTransactions(
+      paginationDto: PaginationDto,
+    ): Promise<GetTransactionDto[]> {
+      const { page, limit } = paginationDto;
+      const take = limit;
+      const skip = (page - 1) * limit;
+
       const query = this.createQueryBuilder('transaction')
-        .addOrderBy('transaction.id', 'DESC')
+        .addOrderBy('transaction.id', 'ASC')
         .leftJoin('transaction.bank', 'bank')
         .leftJoin('transaction.categories', 'category')
+        .skip(skip)
+        .take(take)
         .select([
           'transaction.id',
           'transaction.amount',

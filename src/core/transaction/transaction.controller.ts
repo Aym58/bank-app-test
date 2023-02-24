@@ -6,6 +6,7 @@ import {
   Delete,
   ValidationPipe,
   UseFilters,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -21,6 +22,7 @@ import { TransactionEntity } from './transaction.entity';
 import { TransactionService } from './transaction.service';
 import { GetTransaction } from './decorator/transaction.decorator';
 import { CreateTransactionDto, GetTransactionDto } from './dto/transaction.dto';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @ApiTags('Transaction')
 @Controller('transaction')
@@ -46,11 +48,13 @@ export class TransactionController {
 
   @Get()
   @ApiOkResponse({
-    description: 'Get all Categories',
+    description: 'Get all Transactions',
     type: [GetTransactionDto],
   })
-  async getAllTransactions(): Promise<GetTransactionDto[]> {
-    return this.transactionService.getAllTransactions();
+  async getAllTransactions(
+    @Query() { page = 1, limit = 10 }: PaginationDto,
+  ): Promise<GetTransactionDto[]> {
+    return this.transactionService.getAllTransactions({ page, limit });
   }
 
   @Delete([':id'])

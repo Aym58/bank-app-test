@@ -5,6 +5,7 @@ import { TransactionRepository } from './transaction.repository';
 import { CreateTransactionDto, GetTransactionDto } from './dto/transaction.dto';
 import { BankService } from '../bank/bank.service';
 import { CategoryService } from '../category/category.service';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Injectable()
 export class TransactionService {
@@ -39,8 +40,10 @@ export class TransactionService {
     };
   }
 
-  async getAllTransactions(): Promise<GetTransactionDto[]> {
-    const response = await TransactionRepository.getAllTransactions();
+  async getAllTransactions(
+    pagination: PaginationDto,
+  ): Promise<GetTransactionDto[]> {
+    const response = await TransactionRepository.getAllTransactions(pagination);
     return response;
   }
 
