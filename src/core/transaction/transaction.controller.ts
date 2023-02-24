@@ -14,6 +14,7 @@ import {
   ApiNotFoundResponse,
   ApiConflictResponse,
 } from '@nestjs/swagger';
+import { HttpService } from '@nestjs/axios';
 
 import { HttpExceptionFilter } from '../common/exception.filter';
 import { TransactionEntity } from './transaction.entity';
@@ -22,10 +23,13 @@ import { GetTransaction } from './decorator/transaction.decorator';
 import { CreateTransactionDto, GetTransactionDto } from './dto/transaction.dto';
 
 @ApiTags('Transaction')
-@Controller('Transaction')
+@Controller('transaction')
 @UseFilters(HttpExceptionFilter)
 export class TransactionController {
-  constructor(private transactionService: TransactionService) {}
+  constructor(
+    private transactionService: TransactionService,
+    private readonly httpService: HttpService,
+  ) {}
 
   @Post()
   @ApiCreatedResponse({
@@ -49,7 +53,7 @@ export class TransactionController {
     return this.transactionService.getAllTransactions();
   }
 
-  @Delete(':id')
+  @Delete([':id'])
   @ApiOkResponse({ description: 'Transaction deleted' })
   @ApiNotFoundResponse({ description: 'Transaction not found' })
   async deleteTransaction(

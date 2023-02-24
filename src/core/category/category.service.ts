@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { CategoryEntity } from './category.entity';
 import { CategoryRepository } from './category.repository';
@@ -7,6 +7,7 @@ import {
   GetCategoryDto,
   UpdateCategoryDto,
 } from './dto/category.dto';
+import { Messages } from './enum/messages.enum';
 
 @Injectable()
 export class CategoryService {
@@ -24,6 +25,20 @@ export class CategoryService {
 
   async getOneCategory(category: CategoryEntity): Promise<GetCategoryDto> {
     return { id: category.id, name: category.name };
+  }
+
+  async getCategoriesByIdArray(
+    categotyArray: number[],
+  ): Promise<CategoryEntity[]> {
+    const categories = await CategoryRepository.getCategoriesByIdArray(
+      categotyArray,
+    );
+
+    if (categories.length !== categotyArray.length) {
+      throw new NotFoundException(Messages.NOT_FOUND);
+    }
+
+    return categories;
   }
 
   async updateCategory(

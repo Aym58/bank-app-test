@@ -8,9 +8,11 @@ import { CategoryService } from '../category/category.service';
 import { BankService } from '../bank/bank.service';
 import { CategoryEntity } from '../category/category.entity';
 import { BankEntity } from '../bank/bank.entity';
+import { HttpModule } from '@nestjs/axios/dist';
 
 @Module({
   imports: [
+    HttpModule,
     TypeOrmModule.forFeature([TransactionEntity, CategoryEntity, BankEntity]),
   ],
   providers: [TransactionService, CategoryService, BankService],

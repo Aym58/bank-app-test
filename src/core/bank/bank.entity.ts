@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { TransactionEntity } from '../transaction/transaction.entity';
 
-@Entity({ name: 'script' })
+@Entity({ name: 'bank' })
 export class BankEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;

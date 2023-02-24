@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger/dist';
 
 import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { BankEntity } from 'src/core/bank/bank.entity';
+import { CategoryEntity } from 'src/core/category/category.entity';
+
 import {
   TransactionTypes,
   TransactionTypesType,
@@ -12,6 +15,7 @@ export class CreateTransactionDto {
   @IsNumber()
   @ApiProperty({ example: 500, description: 'Transaction amount' })
   amount: number;
+
   @IsNotEmpty()
   @IsString()
   @IsEnum(TransactionTypes, {
@@ -19,6 +23,14 @@ export class CreateTransactionDto {
   })
   @ApiProperty({ example: 'profitable', description: 'Transaction type' })
   type: TransactionTypesType;
+
+  @IsNotEmpty()
+  @ApiProperty({ example: '1', description: 'Bank id' })
+  bankId: number;
+
+  @IsNotEmpty()
+  @ApiProperty({ example: '[1,2]', description: 'Category id' })
+  categoriesId: number[];
 }
 
 export class GetTransactionDto {
@@ -30,4 +42,10 @@ export class GetTransactionDto {
 
   @ApiProperty({ example: 'profitable', description: 'Transaction type' })
   type: TransactionTypesType;
+
+  @ApiProperty({ example: '1', description: 'Bank id' })
+  bank: BankEntity;
+
+  @ApiProperty({ example: '[1,2]', description: 'Category id' })
+  categories: CategoryEntity[];
 }

@@ -1,4 +1,11 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  BaseEntity,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToMany,
+} from 'typeorm';
+import { TransactionEntity } from '../transaction/transaction.entity';
 
 @Entity({ name: 'category' })
 export class CategoryEntity extends BaseEntity {
@@ -7,4 +14,7 @@ export class CategoryEntity extends BaseEntity {
 
   @Column({ type: 'varchar', unique: true })
   name: string;
+
+  @ManyToMany(() => TransactionEntity, (transaction) => transaction.categories)
+  transactions: TransactionEntity[];
 }

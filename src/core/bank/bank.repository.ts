@@ -23,10 +23,11 @@ export const BankRepository = dataSource.getRepository(BankEntity).extend({
   },
 
   async getAllBanks(): Promise<GetBankDto[]> {
-    const query = this.createQueryBuilder('bank');
-    query.addOrderBy('bank.id', 'DESC');
-    query.select(['bank.id', 'bank.name', 'bank.balance']);
-    return query.getMany();
+    const query = this.createQueryBuilder('bank')
+      .addOrderBy('bank.id', 'DESC')
+      .select(['bank.id', 'bank.name', 'bank.balance'])
+      .getMany();
+    return query;
   },
 
   async updateBank(

@@ -17,5 +17,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
     response.json({
       message: exceptionResponse.message.toString(),
     });
+    console.error({
+      status: exceptionResponse.statusCode,
+      message: exceptionResponse.message.toString(),
+    });
   }
 }

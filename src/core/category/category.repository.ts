@@ -31,10 +31,23 @@ export const CategoryRepository = dataSource
     },
 
     async getAllCategories(): Promise<GetCategoryDto[]> {
-      const query = this.createQueryBuilder('category');
-      query.addOrderBy('category.id', 'DESC');
-      query.select(['category.id', 'category.name']);
-      return query.getMany();
+      const query = this.createQueryBuilder('category')
+        .addOrderBy('category.id', 'DESC')
+        .select(['category.id', 'category.name'])
+        .getMany();
+      return query;
+    },
+
+    async getCategoriesByIdArray(array: number[]): Promise<CategoryEntity[]> {
+      const query = this.createQueryBuilder('category')
+        .addOrderBy('category.id', 'DESC')
+        .where('category.id IN (:...ids)', {
+          ids: array,
+        })
+        .select(['category.id', 'category.name'])
+        .getMany();
+
+      return query;
     },
 
     async updateCategory(

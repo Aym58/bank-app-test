@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { BankEntity } from './bank.entity';
 import { BankRepository } from './bank.repository';
 import { CreateBankDto, GetBankDto, UpdateBankDto } from './dto/bank.dto';
+import { Messages } from './enum/messages.enum';
 
 @Injectable()
 export class BankService {
@@ -18,6 +19,18 @@ export class BankService {
 
   async getOneBank(bank: BankEntity): Promise<GetBankDto> {
     return { id: bank.id, name: bank.name, balance: bank.balance };
+  }
+
+  async getBankById(id: number): Promise<BankEntity> {
+    const bank = await BankRepository.findOne({
+      where: { id },
+    });
+
+    if (!bank) {
+      throw new NotFoundException(Messages.NOT_FOUND);
+    }
+
+    return bank;
   }
 
   async updateBank(
