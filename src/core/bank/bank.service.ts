@@ -6,9 +6,9 @@ import { CreateBankDto, GetBankDto, UpdateBankDto } from './dto/bank.dto';
 
 @Injectable()
 export class BankService {
-  async createBank(createBankDto: CreateBankDto): Promise<BankEntity> {
-    const response = await BankRepository.createBank(createBankDto);
-    return response;
+  async createBank(createBankDto: CreateBankDto): Promise<GetBankDto> {
+    const bank = await BankRepository.createBank(createBankDto);
+    return { id: bank.id, name: bank.name, balance: bank.balance };
   }
 
   async getAllBanks(): Promise<GetBankDto[]> {
@@ -16,16 +16,20 @@ export class BankService {
     return response;
   }
 
-  async getOneBank(bank: BankEntity): Promise<BankEntity> {
-    return bank;
+  async getOneBank(bank: BankEntity): Promise<GetBankDto> {
+    return { id: bank.id, name: bank.name, balance: bank.balance };
   }
 
   async updateBank(
     bank: BankEntity,
     updateBankDto: UpdateBankDto,
-  ): Promise<BankEntity> {
-    const response = await BankRepository.updateBank(bank, updateBankDto);
-    return response;
+  ): Promise<GetBankDto> {
+    const bankUpdated = await BankRepository.updateBank(bank, updateBankDto);
+    return {
+      id: bankUpdated.id,
+      name: bankUpdated.name,
+      balance: bankUpdated.balance,
+    };
   }
 
   async deleteBank(bank: BankEntity): Promise<void> {

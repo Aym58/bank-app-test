@@ -3,11 +3,13 @@ import { ConfigService } from '@nestjs/config';
 import { DataSourceOptions } from 'typeorm';
 import { config } from 'dotenv';
 import { BankEntity } from 'src/core/bank/bank.entity';
+import { CategoryEntity } from 'src/core/category/category.entity';
+import { TransactionEntity } from 'src/core/transaction/transaction.entity';
 
 config();
 const configService = new ConfigService();
 
-const Entities = [BankEntity];
+const Entities = [BankEntity, CategoryEntity, TransactionEntity];
 
 export const typeOrmConfig: DataSourceOptions = {
   type: 'postgres',

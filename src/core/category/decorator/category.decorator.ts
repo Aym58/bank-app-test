@@ -1,24 +1,24 @@
 import { createParamDecorator } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common';
 
-import { BankEntity } from '../bank.entity';
-import { BankRepository } from '../bank.repository';
+import { CategoryEntity } from '../category.entity';
+import { CategoryRepository } from '../category.repository';
 import { Messages } from '../enum/messages.enum';
 
-export const GetBank = createParamDecorator(
-  async (data: string, context): Promise<BankEntity> => {
+export const GetCategory = createParamDecorator(
+  async (data: string, context): Promise<CategoryEntity> => {
     const request = context.switchToHttp().getRequest();
     const { params } = request;
     const id = Number(params.id);
 
-    const bank = await BankRepository.findOne({
+    const category = await CategoryRepository.findOne({
       where: { id },
     });
 
-    if (!bank) {
+    if (!category) {
       throw new NotFoundException(Messages.NOT_FOUND);
     }
 
-    return bank;
+    return category;
   },
 );

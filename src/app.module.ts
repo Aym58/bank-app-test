@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { BankModule } from './core/bank/bank.module';
 
+import { BankModule } from './core/bank/bank.module';
+import { CategoryModule } from './core/category/category.module';
+import { TransactionModule } from './core/transaction/transaction.module';
 import { TypeOrmModule } from './database/typeorm/typeorm.module';
 
 @Module({
@@ -11,6 +13,8 @@ import { TypeOrmModule } from './database/typeorm/typeorm.module';
     }),
     TypeOrmModule,
     BankModule,
+    CategoryModule,
+    TransactionModule,
   ],
 })
 export class AppModule {}

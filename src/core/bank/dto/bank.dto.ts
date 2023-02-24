@@ -1,19 +1,26 @@
+import { ApiProperty } from '@nestjs/swagger/dist';
+
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateBankDto {
   @IsNotEmpty()
   @IsString()
+  @ApiProperty({ example: 'Chase', description: 'Bank name' })
   name: string;
 }
 
-export interface GetBankDto {
+export class GetBankDto {
+  @ApiProperty({ example: 1, description: 'Bank id' })
   id: number;
+  @ApiProperty({ example: 'Chase', description: 'Bank name' })
   name: string;
-  balanse: number;
+  @ApiProperty({ example: 1200, description: 'Bank balance' })
+  balance: number;
 }
 
 export class UpdateBankDto {
   @IsNotEmpty()
   @IsString()
+  @ApiProperty({ example: 'Chase', description: 'Bank name' })
   name: string;
 }
