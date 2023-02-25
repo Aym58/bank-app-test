@@ -6,13 +6,13 @@ import {
   UseFilters,
   HttpCode,
 } from '@nestjs/common';
-import { ApiTags, ApiOkResponse, ApiConflictResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOkResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 
 import { HttpExceptionFilter } from '../common/exception.filter';
 import { StatisticsService } from './statistics.service';
 import { GetStatisticsDto, IStatistics } from './dto/statistics.dto';
 
-@ApiTags('Category')
+@ApiTags('Statistics')
 @Controller('statistics')
 @UseFilters(HttpExceptionFilter)
 export class StatisticsController {
@@ -24,7 +24,7 @@ export class StatisticsController {
     description:
       'Get statistics by period, example: { food: -800, salary: +2000 }',
   })
-  @ApiConflictResponse({ description: 'Category already exists' })
+  @ApiNotFoundResponse({ description: 'Category not found' })
   async createCategory(
     @Body(ValidationPipe) getStatisticsDto: GetStatisticsDto,
   ): Promise<IStatistics | any> {

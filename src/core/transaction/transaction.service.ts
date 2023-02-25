@@ -34,7 +34,6 @@ export class TransactionService {
       bank,
       categories,
     );
-
     await this.bankService.updateBankBalance(bank);
 
     return {

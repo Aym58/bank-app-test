@@ -1,28 +1,19 @@
+# Base image
+FROM node:18
 
-FROM node:16-alpine as development
-
+# Create app directory
 WORKDIR /app
 
-COPY tsconfig*.json ./
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
 
-RUN npm ci
+# Install app dependencies
+RUN npm install
 
-COPY src/ src/
+# Bundle app source
+COPY . .
 
-RUN npm run build
+# Start the server using the production build
+CMD ["npm", "run", "start:dev"]
 
-FROM node:16-alpine as production
-
-WORKDIR /app
-
-COPY package*.json ./
-
-RUN npm ci --omit=dev
-
-COPY --from=development /app/dist/ ./dist/
-
-EXPOSE 3000
-
-CMD ["node", "dist/main"]
 

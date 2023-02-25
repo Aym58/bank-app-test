@@ -1,39 +1,29 @@
-version: '1.0'
-
 services:
-  dev:
-    container_name: bankapp-testtask
-    image: bankapp-testtask:1.0.0
+  api:
     build:
+      dockerfile: Dockerfile
       context: .
       target: development
-      dockerfile: ./Dockerfile
+    environment:
+      - PORT=3000
+      - DEV_DB_URI=postgres://histcqwn:m8HEixQeeAxwu402G75y7R2Op9Ot-zge@mouse.db.elephantsql.com/histcqwn
+      - DB_PORT=5432
+      - DB_USER=postgres
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+    links:
+      - postgres:postgres
+    volumes:
+      - .:/app
+      - /app/node_modules
     command: npm run start:dev
-    ports:
-      - 3000:3000
-    networks:
-      - nesjs-network
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    restart: unless-stopped
-  prod:
-    container_name: bankapp-testtask
-    image: bankapp-testtask:1.0.0
-    build:
-      context: .
-      target: production
-      dockerfile: ./Dockerfile
-    command: npm run start:prod
-    ports:
-      - 3000:3000
-      - 9229:9229
-    networks:
-      - nesjs-network
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    restart: unless-stopped
 
-networks:
-  nesjs-network:
+  postgres:
+    image: postgres:alpine
+    restart: always
+    environment:
+      - DB_USER=postgres
+      - DB_PASS=m_fgxSSLlVaWCAAqJSMTjT0kI_p7gVF8
+      - DEV_DB_URI=postgres://histcqwn:m8HEixQeeAxwu402G75y7R2Op9Ot-zge@mouse.db.elephantsql.com/histcqwn

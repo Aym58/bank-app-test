@@ -13,7 +13,7 @@ const Entities = [BankEntity, CategoryEntity, TransactionEntity];
 
 export const typeOrmConfig: DataSourceOptions = {
   type: 'postgres',
-  url: configService.get('DB_URI'),
+  url: configService.get('DEV_DB_URI'),
   entities: Entities,
   ssl: { rejectUnauthorized: false },
   logging: ['query', 'error'],
