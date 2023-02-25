@@ -13,7 +13,6 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiNotFoundResponse,
-  ApiConflictResponse,
 } from '@nestjs/swagger';
 
 import { HttpExceptionFilter } from '../common/exception.filter';
@@ -33,7 +32,6 @@ export class TransactionController {
   @ApiCreatedResponse({
     description: 'Transaction created',
   })
-  @ApiConflictResponse({ description: 'Transaction already exists' })
   async createTransaction(
     @Body(ValidationPipe) createTransactionDto: CreateTransactionDto,
   ): Promise<GetTransactionDto> {
@@ -57,8 +55,8 @@ export class TransactionController {
   @ApiOkResponse({ description: 'Transaction deleted' })
   @ApiNotFoundResponse({ description: 'Transaction not found' })
   async deleteTransaction(
-    @GetTransaction() Transaction: TransactionEntity,
+    @GetTransaction() transaction: TransactionEntity,
   ): Promise<void> {
-    return this.transactionService.deleteTransaction(Transaction);
+    return this.transactionService.deleteTransaction(transaction);
   }
 }

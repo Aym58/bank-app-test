@@ -14,7 +14,6 @@ export const GetBank = createParamDecorator(
     const bank = await BankRepository.findOne({
       where: { id },
     });
-
     if (!bank) {
       throw new NotFoundException(Messages.NOT_FOUND);
     }

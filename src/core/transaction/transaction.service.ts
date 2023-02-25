@@ -6,6 +6,7 @@ import { CreateTransactionDto, GetTransactionDto } from './dto/transaction.dto';
 import { BankService } from '../bank/bank.service';
 import { CategoryService } from '../category/category.service';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import { TransactionTypes } from './constant/transaction.types';
 
 @Injectable()
 export class TransactionService {
@@ -17,17 +18,25 @@ export class TransactionService {
   async createTransaction(
     createTransactionDto: CreateTransactionDto,
   ): Promise<GetTransactionDto> {
-    const { bankId, categoriesId } = createTransactionDto;
+    const { amount, type, bankId, categoriesId } = createTransactionDto;
+
     const bank = await this.bankService.getBankById(bankId);
     const categories = await this.categoryService.getCategoriesByIdArray(
       categoriesId,
     );
+
+    type === TransactionTypes.CONSUMABLE
+      ? (createTransactionDto.amount = -Math.abs(amount))
+      : (createTransactionDto.amount = Math.abs(amount));
+
     const transaction = await TransactionRepository.createTransaction(
       createTransactionDto,
       bank,
       categories,
     );
+
     await this.bankService.updateBankBalance(bank);
+
     return {
       id: transaction.id,
       amount: transaction.amount,
@@ -50,7 +59,13 @@ export class TransactionService {
 
   async deleteTransaction(transaction: TransactionEntity): Promise<void> {
     try {
+      const { bank } = await TransactionRepository.findOne({
+        relations: { bank: true },
+        where: { id: transaction.id },
+      });
+
       await transaction.remove();
+      await this.bankService.updateBankBalance(bank);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

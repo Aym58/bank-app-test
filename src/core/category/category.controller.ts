@@ -71,6 +71,9 @@ export class CategoryController {
   @Delete(':id')
   @ApiOkResponse({ description: 'Category deleted' })
   @ApiNotFoundResponse({ description: 'Category not found' })
+  @ApiConflictResponse({
+    description: 'Category with transactions cannot be deleted',
+  })
   async deleteCategory(@GetCategory() category: CategoryEntity): Promise<void> {
     return this.categoryService.deleteCategory(category);
   }

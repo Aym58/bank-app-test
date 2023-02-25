@@ -19,6 +19,7 @@ export const TransactionRepository = dataSource
       transaction.type = type;
       transaction.bank = bank;
       transaction.categories = categories;
+
       await transaction.save();
       return transaction;
     },
@@ -37,6 +38,7 @@ export const TransactionRepository = dataSource
         .take(take)
         .select(['transaction.id', 'transaction.amount', 'transaction.type'])
         .getMany();
+
       return query;
     },
   });

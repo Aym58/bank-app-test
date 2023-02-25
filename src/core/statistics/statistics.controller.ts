@@ -9,10 +9,8 @@ import {
 import { ApiTags, ApiOkResponse, ApiConflictResponse } from '@nestjs/swagger';
 
 import { HttpExceptionFilter } from '../common/exception.filter';
-
 import { StatisticsService } from './statistics.service';
-
-import { StatisticsRequestDto, IStatistics } from './dto/statistics.dto';
+import { GetStatisticsDto, IStatistics } from './dto/statistics.dto';
 
 @ApiTags('Category')
 @Controller('statistics')
@@ -28,8 +26,8 @@ export class StatisticsController {
   })
   @ApiConflictResponse({ description: 'Category already exists' })
   async createCategory(
-    @Body(ValidationPipe) statisticsRequestDto: StatisticsRequestDto,
+    @Body(ValidationPipe) getStatisticsDto: GetStatisticsDto,
   ): Promise<IStatistics | any> {
-    return await this.statisticsService.getStatistics(statisticsRequestDto);
+    return await this.statisticsService.getStatistics(getStatisticsDto);
   }
 }

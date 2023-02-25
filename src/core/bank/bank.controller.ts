@@ -65,6 +65,9 @@ export class BankController {
   @Delete(':id')
   @ApiOkResponse({ description: 'Bank deleted' })
   @ApiNotFoundResponse({ description: 'Bank not found' })
+  @ApiConflictResponse({
+    description: 'Bank with transactions cannot be deleted',
+  })
   async deleteBank(@GetBank() bank: BankEntity): Promise<void> {
     return this.bankService.deleteBank(bank);
   }

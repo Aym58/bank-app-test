@@ -16,6 +16,7 @@ export const CategoryRepository = dataSource
       const { name } = createCategoryDto;
       const category = new CategoryEntity();
       category.name = name.toLowerCase();
+
       await category.save();
       return category;
     },
@@ -25,6 +26,7 @@ export const CategoryRepository = dataSource
         .addOrderBy('category.id', 'ASC')
         .select(['category.id', 'category.name'])
         .getMany();
+
       return categories;
     },
 
@@ -37,6 +39,7 @@ export const CategoryRepository = dataSource
         })
         .select(['category.id', 'category.name', 'transaction'])
         .getMany();
+
       return categories;
     },
 
@@ -46,6 +49,7 @@ export const CategoryRepository = dataSource
     ): Promise<CategoryEntity> {
       const { name } = updateCategoryDto;
       category.name = name.toLowerCase();
+
       await category.save();
       return category;
     },
@@ -55,6 +59,7 @@ export const CategoryRepository = dataSource
         .leftJoinAndSelect('category.transactions', 'transaction')
         .where('category.id = :id', { id: category.id })
         .getOne();
+
       if (transactions && transactions.length !== 0) {
         throw new Error(Messages.HAVE_TRANSACTIONS);
       }

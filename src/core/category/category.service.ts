@@ -23,9 +23,11 @@ export class CategoryService {
     const alreadyExists = await CategoryRepository.findOne({
       where: { name: name.toLowerCase() },
     });
+
     if (alreadyExists) {
       throw new ConflictException(Messages.ALRESDY_EXISTS);
     }
+
     try {
       const category = await CategoryRepository.createCategory(
         createCategoryDto,
@@ -55,9 +57,11 @@ export class CategoryService {
     const categories = await CategoryRepository.getCategoriesByIdArray(
       categoryArray,
     );
+
     if (!categories || categories.length !== categoryArray.length) {
       throw new NotFoundException(Messages.NOT_FOUND);
     }
+
     return categories;
   }
 
@@ -66,6 +70,7 @@ export class CategoryService {
     updateCategoryDto: UpdateCategoryDto,
   ): Promise<GetCategoryDto> {
     const name = updateCategoryDto.name.toLowerCase();
+
     if (name && name !== category.name) {
       const alreadyExists = await CategoryRepository.findOne({
         where: { name },
@@ -77,6 +82,7 @@ export class CategoryService {
         category,
         updateCategoryDto,
       );
+
       return {
         id: categoryUpdated.id,
         name: categoryUpdated.name,

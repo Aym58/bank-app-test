@@ -12,6 +12,7 @@ export const GetTransaction = createParamDecorator(
     const id = Number(params.id);
 
     const transaction = await TransactionRepository.findOne({
+      relations: { bank: true, categories: true },
       where: { id },
     });
 

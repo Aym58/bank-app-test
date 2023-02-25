@@ -1,5 +1,4 @@
 import { dataSource } from 'src/database/typeorm/typeorm.datasource';
-import { TransactionTypes } from '../transaction/constant/transaction.types';
 import { BankEntity } from './bank.entity';
 import { CreateBankDto, GetBankDto, UpdateBankDto } from './dto/bank.dto';
 import { Messages } from './enum/messages.enum';
@@ -9,6 +8,7 @@ export const BankRepository = dataSource.getRepository(BankEntity).extend({
     const { name } = createBankDto;
     const bank = new BankEntity();
     bank.name = name.toLowerCase();
+
     await bank.save();
     return bank;
   },
@@ -18,6 +18,7 @@ export const BankRepository = dataSource.getRepository(BankEntity).extend({
       .addOrderBy('bank.id', 'ASC')
       .select(['bank.id', 'bank.name', 'bank.balance'])
       .getMany();
+
     return banks;
   },
 
@@ -27,26 +28,22 @@ export const BankRepository = dataSource.getRepository(BankEntity).extend({
   ): Promise<BankEntity> {
     const { name } = updateBankDto;
     bank.name = name.toLowerCase();
+
     await bank.save();
     return bank;
   },
 
   async updateBankBalance(bank: BankEntity): Promise<void> {
-    const { transactions } = await this.createQueryBuilder('bank')
+    const { balance } = await this.createQueryBuilder('bank')
       .leftJoinAndSelect('bank.transactions', 'transaction')
       .where('bank.id = :id', { id: bank.id })
-      .getOne();
-    const balance: number = transactions.reduce(
-      (accum, transaction) =>
-        transaction.type === TransactionTypes.PROFITABLE
-          ? accum + transaction.amount
-          : accum - transaction.amount,
-      0,
-    );
-    if (balance && balance !== bank.balance) {
-      bank.balance = balance;
-      await bank.save();
-    }
+      .select('bank.id')
+      .groupBy('bank.id')
+      .addSelect('SUM(transaction.amount)', 'balance')
+      .getRawOne();
+
+    bank.balance = Number(balance);
+    await bank.save();
   },
 
   async deleteBank(bank: BankEntity): Promise<void> {
@@ -54,9 +51,11 @@ export const BankRepository = dataSource.getRepository(BankEntity).extend({
       .leftJoinAndSelect('bank.transactions', 'transaction')
       .where('bank.id = :id', { id: bank.id })
       .getOne();
+
     if (transactions && transactions.length !== 0) {
       throw new Error(Messages.HAVE_TRANSACTIONS);
     }
+
     await bank.remove();
   },
 });

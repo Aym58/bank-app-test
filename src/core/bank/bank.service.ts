@@ -47,6 +47,7 @@ export class BankService {
     const bank = await BankRepository.findOne({
       where: { id },
     });
+
     if (!bank) {
       throw new NotFoundException(Messages.NOT_FOUND);
     }
@@ -58,6 +59,7 @@ export class BankService {
     updateBankDto: UpdateBankDto,
   ): Promise<GetBankDto> {
     const name = updateBankDto.name.toLowerCase();
+
     if (name && name !== bank.name) {
       const alreadyExists = await BankRepository.findOne({
         where: { name },
@@ -70,6 +72,7 @@ export class BankService {
           bank,
           updateBankDto,
         );
+
         return {
           id: bankUpdated.id,
           name: bankUpdated.name,

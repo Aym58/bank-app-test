@@ -9,6 +9,7 @@ import {
   JoinTable,
   CreateDateColumn,
 } from 'typeorm';
+
 import { BankEntity } from '../bank/bank.entity';
 import { CategoryEntity } from '../category/category.entity';
 import { TransactionTypesType } from './constant/transaction.types';
@@ -24,17 +25,24 @@ export class TransactionEntity extends BaseEntity {
   @Column()
   type: TransactionTypesType;
 
-  @ManyToOne(() => BankEntity, (bank) => bank.transactions)
-  @JoinColumn()
-  bank: BankEntity;
-
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
   createdAt: Date;
 
-  @ManyToMany(() => CategoryEntity, (category) => category.transactions)
-  @JoinTable()
+  @ManyToOne(() => BankEntity, (bank) => bank.transactions, {
+    nullable: false,
+    createForeignKeyConstraints: false,
+  })
+  @JoinColumn()
+  bank: BankEntity;
+
+  @ManyToMany(() => CategoryEntity, (category) => category.transactions, {
+    cascade: true,
+  })
+  @JoinTable({
+    name: 'transaction_categories_category',
+  })
   categories: CategoryEntity[];
 }
