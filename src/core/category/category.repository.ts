@@ -1,5 +1,3 @@
-import { ConflictException } from '@nestjs/common';
-
 import { dataSource } from 'src/database/typeorm/typeorm.datasource';
 import { CategoryEntity } from './category.entity';
 import {
@@ -16,14 +14,6 @@ export const CategoryRepository = dataSource
       createCategoryDto: CreateCategoryDto,
     ): Promise<CategoryEntity> {
       const { name } = createCategoryDto;
-
-      const alreadyExists = await this.findOne({
-        where: { name: name.toLowerCase() },
-      });
-
-      if (alreadyExists) {
-        throw new ConflictException(Messages.ALRESDY_EXISTS);
-      }
       const category = new CategoryEntity();
       category.name = name.toLowerCase();
       await category.save();
@@ -31,23 +21,23 @@ export const CategoryRepository = dataSource
     },
 
     async getAllCategories(): Promise<GetCategoryDto[]> {
-      const query = this.createQueryBuilder('category')
+      const categories = await this.createQueryBuilder('category')
         .addOrderBy('category.id', 'ASC')
         .select(['category.id', 'category.name'])
         .getMany();
-      return query;
+      return categories;
     },
 
     async getCategoriesByIdArray(array: number[]): Promise<CategoryEntity[]> {
-      const query = this.createQueryBuilder('category')
+      const categories = await this.createQueryBuilder('category')
         .addOrderBy('category.id', 'ASC')
+        .leftJoin('category.transactions', 'transaction')
         .where('category.id IN (:...ids)', {
           ids: array,
         })
-        .select(['category.id', 'category.name'])
+        .select(['category.id', 'category.name', 'transaction'])
         .getMany();
-
-      return query;
+      return categories;
     },
 
     async updateCategory(
@@ -55,10 +45,19 @@ export const CategoryRepository = dataSource
       updateCategoryDto: UpdateCategoryDto,
     ): Promise<CategoryEntity> {
       const { name } = updateCategoryDto;
-      if (name && name !== category.name) {
-        category.name = name;
-      }
+      category.name = name.toLowerCase();
       await category.save();
       return category;
+    },
+
+    async deleteCategory(category: CategoryEntity): Promise<void> {
+      const { transactions } = await this.createQueryBuilder('category')
+        .leftJoinAndSelect('category.transactions', 'transaction')
+        .where('category.id = :id', { id: category.id })
+        .getOne();
+      if (transactions && transactions.length !== 0) {
+        throw new Error(Messages.HAVE_TRANSACTIONS);
+      }
+      await category.remove();
     },
   });

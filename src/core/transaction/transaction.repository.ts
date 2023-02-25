@@ -14,7 +14,6 @@ export const TransactionRepository = dataSource
       categories: CategoryEntity[],
     ): Promise<TransactionEntity> {
       const { amount, type } = createTransactionDto;
-
       const transaction = new TransactionEntity();
       transaction.amount = amount;
       transaction.type = type;
@@ -30,22 +29,14 @@ export const TransactionRepository = dataSource
       const { page, limit } = paginationDto;
       const take = limit;
       const skip = (page - 1) * limit;
-
-      const query = this.createQueryBuilder('transaction')
+      const query = await this.createQueryBuilder('transaction')
         .addOrderBy('transaction.id', 'ASC')
         .leftJoin('transaction.bank', 'bank')
         .leftJoin('transaction.categories', 'category')
         .skip(skip)
         .take(take)
-        .select([
-          'transaction.id',
-          'transaction.amount',
-          'transaction.type',
-          'bank.id',
-          'category.id',
-        ])
+        .select(['transaction.id', 'transaction.amount', 'transaction.type'])
         .getMany();
-
       return query;
     },
   });

@@ -11,10 +11,6 @@ export const GetTransaction = createParamDecorator(
     const { params } = request;
     const id = Number(params.id);
 
-    const id1 = Number(params.trId);
-
-    console.log('*******', id1);
-
     const transaction = await TransactionRepository.findOne({
       where: { id },
     });

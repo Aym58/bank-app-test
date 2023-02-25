@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 import { CategoryEntity } from './category.entity';
 import { CategoryRepository } from './category.repository';
@@ -14,13 +19,30 @@ export class CategoryService {
   async createCategory(
     createCategoryDto: CreateCategoryDto,
   ): Promise<GetCategoryDto> {
-    const category = await CategoryRepository.createCategory(createCategoryDto);
-    return { id: category.id, name: category.name };
+    const { name } = createCategoryDto;
+    const alreadyExists = await CategoryRepository.findOne({
+      where: { name: name.toLowerCase() },
+    });
+    if (alreadyExists) {
+      throw new ConflictException(Messages.ALRESDY_EXISTS);
+    }
+    try {
+      const category = await CategoryRepository.createCategory(
+        createCategoryDto,
+      );
+      return { id: category.id, name: category.name };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   async getAllCategories(): Promise<GetCategoryDto[]> {
-    const response = await CategoryRepository.getAllCategories();
-    return response;
+    try {
+      const categoryList = await CategoryRepository.getAllCategories();
+      return categoryList;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   async getOneCategory(category: CategoryEntity): Promise<GetCategoryDto> {
@@ -28,16 +50,14 @@ export class CategoryService {
   }
 
   async getCategoriesByIdArray(
-    categotyArray: number[],
+    categoryArray: number[],
   ): Promise<CategoryEntity[]> {
     const categories = await CategoryRepository.getCategoriesByIdArray(
-      categotyArray,
+      categoryArray,
     );
-
-    if (categories.length !== categotyArray.length) {
+    if (!categories || categories.length !== categoryArray.length) {
       throw new NotFoundException(Messages.NOT_FOUND);
     }
-
     return categories;
   }
 
@@ -45,17 +65,30 @@ export class CategoryService {
     category: CategoryEntity,
     updateCategoryDto: UpdateCategoryDto,
   ): Promise<GetCategoryDto> {
-    const categoryUpdated = await CategoryRepository.updateCategory(
-      category,
-      updateCategoryDto,
-    );
-    return {
-      id: categoryUpdated.id,
-      name: categoryUpdated.name,
-    };
+    const name = updateCategoryDto.name.toLowerCase();
+    if (name && name !== category.name) {
+      const alreadyExists = await CategoryRepository.findOne({
+        where: { name },
+      });
+      if (alreadyExists) {
+        throw new ConflictException(Messages.ALRESDY_EXISTS);
+      }
+      const categoryUpdated = await CategoryRepository.updateCategory(
+        category,
+        updateCategoryDto,
+      );
+      return {
+        id: categoryUpdated.id,
+        name: categoryUpdated.name,
+      };
+    }
   }
 
-  async deleteCategory(Category: CategoryEntity): Promise<void> {
-    await Category.remove();
+  async deleteCategory(category: CategoryEntity): Promise<void> {
+    try {
+      await CategoryRepository.deleteCategory(category);
+    } catch (error) {
+      throw new ConflictException(error.message);
+    }
   }
 }

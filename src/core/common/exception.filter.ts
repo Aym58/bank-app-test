@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 
 import { Response } from 'express';
+import { Messages } from './enum/messages.enum';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -15,11 +16,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = context.getResponse<Response>();
     response.status(exceptionResponse.statusCode);
     response.json({
-      message: exceptionResponse.message.toString(),
+      message: exceptionResponse.message.toString() || Messages.UNDEFINED_ERROR,
     });
     console.error({
-      status: exceptionResponse.statusCode,
-      message: exceptionResponse.message.toString(),
+      status: exceptionResponse.statusCode || 500,
+      message: exceptionResponse.message.toString() || Messages.UNDEFINED_ERROR,
     });
   }
 }

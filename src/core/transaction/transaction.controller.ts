@@ -15,7 +15,6 @@ import {
   ApiNotFoundResponse,
   ApiConflictResponse,
 } from '@nestjs/swagger';
-import { HttpService } from '@nestjs/axios';
 
 import { HttpExceptionFilter } from '../common/exception.filter';
 import { TransactionEntity } from './transaction.entity';
@@ -28,10 +27,7 @@ import { PaginationDto } from '../common/dto/pagination.dto';
 @Controller('transaction')
 @UseFilters(HttpExceptionFilter)
 export class TransactionController {
-  constructor(
-    private transactionService: TransactionService,
-    private readonly httpService: HttpService,
-  ) {}
+  constructor(private transactionService: TransactionService) {}
 
   @Post()
   @ApiCreatedResponse({

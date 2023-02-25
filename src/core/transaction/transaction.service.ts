@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
 import { TransactionEntity } from './transaction.entity';
 import { TransactionRepository } from './transaction.repository';
@@ -18,36 +18,41 @@ export class TransactionService {
     createTransactionDto: CreateTransactionDto,
   ): Promise<GetTransactionDto> {
     const { bankId, categoriesId } = createTransactionDto;
-
     const bank = await this.bankService.getBankById(bankId);
-
     const categories = await this.categoryService.getCategoriesByIdArray(
       categoriesId,
     );
-
     const transaction = await TransactionRepository.createTransaction(
       createTransactionDto,
       bank,
       categories,
     );
-
+    await this.bankService.updateBankBalance(bank);
     return {
       id: transaction.id,
       amount: transaction.amount,
       type: transaction.type,
-      bank: transaction.bank,
-      categories: transaction.categories,
     };
   }
 
   async getAllTransactions(
     pagination: PaginationDto,
   ): Promise<GetTransactionDto[]> {
-    const response = await TransactionRepository.getAllTransactions(pagination);
-    return response;
+    try {
+      const transactionList = await TransactionRepository.getAllTransactions(
+        pagination,
+      );
+      return transactionList;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
-  async deleteTransaction(Transaction: TransactionEntity): Promise<void> {
-    await Transaction.remove();
+  async deleteTransaction(transaction: TransactionEntity): Promise<void> {
+    try {
+      await transaction.remove();
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 }

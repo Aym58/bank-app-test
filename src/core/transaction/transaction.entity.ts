@@ -7,6 +7,7 @@ import {
   JoinColumn,
   ManyToMany,
   JoinTable,
+  CreateDateColumn,
 } from 'typeorm';
 import { BankEntity } from '../bank/bank.entity';
 import { CategoryEntity } from '../category/category.entity';
@@ -26,6 +27,12 @@ export class TransactionEntity extends BaseEntity {
   @ManyToOne(() => BankEntity, (bank) => bank.transactions)
   @JoinColumn()
   bank: BankEntity;
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
+  createdAt: Date;
 
   @ManyToMany(() => CategoryEntity, (category) => category.transactions)
   @JoinTable()
